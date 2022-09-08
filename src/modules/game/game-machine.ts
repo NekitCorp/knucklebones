@@ -72,6 +72,7 @@ export function createGameMachine(player: Player) {
                     ...initialContext,
                     boards: { 1: createInitialBoard(), 2: createInitialBoard() },
                     firstPlayerMove: revertPlayer(ctx.firstPlayerMove),
+                    currentMove: revertPlayer(ctx.firstPlayerMove),
                 })),
                 setResult: assign({
                     result: (ctx) => {

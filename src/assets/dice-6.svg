@@ -1,0 +1,25 @@
+<svg width="157" height="157" viewBox="0 0 157 157" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <style>
+        rect {
+            fill: #eee;
+        }
+        circle {
+            fill: #4f4f4f;
+        }
+        @media (prefers-color-scheme: dark) {
+            rect {
+                fill: #597686;
+            }
+            circle {
+                fill: #eee;
+            }
+        }
+    </style>
+    <rect width="157" height="157" rx="21.9671" />
+    <circle cx="61.5185" cy="46.5186" r="11.0185" transform="rotate(90 61.5185 46.5186)" />
+    <circle cx="61.5185" cy="78.5185" r="11.0185" transform="rotate(90 61.5185 78.5185)" />
+    <circle cx="61.5185" cy="110.519" r="11.0185" transform="rotate(90 61.5185 110.519)" />
+    <circle cx="94.5185" cy="46.5186" r="11.0185" transform="rotate(90 94.5185 46.5186)" />
+    <circle cx="94.5185" cy="78.5185" r="11.0185" transform="rotate(90 94.5185 78.5185)" />
+    <circle cx="94.5185" cy="110.519" r="11.0185" transform="rotate(90 94.5185 110.519)" />
+</svg>
