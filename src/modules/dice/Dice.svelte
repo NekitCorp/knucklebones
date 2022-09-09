@@ -1,4 +1,5 @@
 <script lang="ts">
+    // https://www.figma.com/file/m6qC1ZsEI8F4k5JfVEFJLU/Dice-(Community)?node-id=5%3A61
     import dice1 from 'src/assets/dice-1.svg';
     import dice2 from 'src/assets/dice-2.svg';
     import dice3 from 'src/assets/dice-3.svg';
@@ -23,12 +24,23 @@
 {:else if value === 6}
     <img src={dice6} class="dice" alt="Dice 6" />
 {:else}
-    <div class="dice" />
+    <div class="dice empty" />
 {/if}
 
 <style>
     .dice {
-        width: 5vh;
-        height: 5vh;
+        width: var(--dice-size);
+        height: var(--dice-size);
+    }
+
+    .empty {
+        border: 1px dashed #eee;
+        border-radius: 6px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        .empty {
+            border-color: #597686;
+        }
     }
 </style>

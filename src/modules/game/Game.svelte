@@ -1,7 +1,8 @@
 <script lang="ts">
-    import Dice from 'src/components/Dice.svelte';
+    import Dice from 'src/modules/dice/Dice.svelte';
+    import RollDice from 'src/modules/dice/RollDice.svelte';
     import { createEventDispatcher } from 'svelte';
-    import type { DiceService } from './dice-service';
+    import type { DiceService } from '../dice/dice-service';
     import type { GameService } from './game-service';
     import type { GameEvent } from './types';
     import { getBoardLinePoints, getBoardPoints, revertPlayer } from './utils';
@@ -19,7 +20,7 @@
     };
 
     function makeTurn(line: number) {
-        if (isYourMove && $diceState.type === 'stopped') {
+        if (isYourMove) {
             move({ type: 'MOVE', line: line as 0 | 1 | 2, value: $diceState.value });
         }
     }
@@ -51,11 +52,7 @@
                 {$state.context.currentMove === 1 ? '🐱' : '🐶'}
                 {isYourMove ? 'Your turn' : "Opponent's move"}
             </h2>
-            {#if $diceState.type === 'rolling'}
-                <h2>Rolling the dice...</h2>
-            {:else if $diceState.type === 'stopped'}
-                <Dice value={$diceState.value} />
-            {/if}
+            <RollDice roll={$diceState} />
         {:else if $state.value === 'end'}
             {#if $state.context.result === 'win'}<h2>🏆 You won!</h2>{/if}
             {#if $state.context.result === 'lose'}<h2>😥 You lose</h2>{/if}

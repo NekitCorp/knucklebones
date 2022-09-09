@@ -1,6 +1,6 @@
 <script lang="ts">
     import { GameService } from './modules/game';
-    import { DiceService } from './modules/game/dice-service';
+    import { DiceService } from './modules/dice/dice-service';
     import Game from './modules/game/Game.svelte';
     import type { GameEvent } from './modules/game/types';
     import { PeerToPeerService } from './modules/peer-to-peer';
@@ -43,7 +43,7 @@
             p2p.send(message);
 
             // roll the dice (another player)
-            dice.setRollingState();
+            // dice.setRollingState();
         }
     }
 </script>
