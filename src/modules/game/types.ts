@@ -12,9 +12,10 @@ export type Context = {
     currentMove: Player;
     firstPlayerMove: Player;
     result: 'win' | 'lose' | 'draw' | null;
+    dice: { value: DiceValue } | null;
 };
 
-export type Events = { type: 'MOVE'; line: 0 | 1 | 2; value: NonNullable<Cell> } | { type: 'RESET' };
+export type Events = { type: 'MOVE'; line: 0 | 1 | 2 } | { type: 'RESET' } | { type: 'DICE'; value: DiceValue };
 export type GameEvent = Event<Events>;
 
 export type GameState = Readable<State<Context, Events>>;

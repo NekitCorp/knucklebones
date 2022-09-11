@@ -2,23 +2,27 @@
     import type { DiceValue } from 'src/modules/game/types';
     import Dice from './Dice.svelte';
 
-    export let roll: { value: DiceValue };
+    export let roll: { value: DiceValue } | null;
     let value: DiceValue = 1;
 
     $: {
-        value = ((roll.value + 3) % 6) as DiceValue;
-        setTimeout(() => (value = roll.value), 750);
+        if (roll) {
+            value = ((roll.value + 3) % 6) as DiceValue;
+            setTimeout(() => (value = roll.value), 750);
+        }
     }
 </script>
 
-<div class={`dice show-${value}`}>
-    <div class="side one"><Dice value={1} /></div>
-    <div class="side two"><Dice value={2} /></div>
-    <div class="side three"><Dice value={3} /></div>
-    <div class="side four"><Dice value={4} /></div>
-    <div class="side five"><Dice value={5} /></div>
-    <div class="side six"><Dice value={6} /></div>
-</div>
+{#if roll}
+    <div class={`dice show-${value}`}>
+        <div class="side one"><Dice value={1} /></div>
+        <div class="side two"><Dice value={2} /></div>
+        <div class="side three"><Dice value={3} /></div>
+        <div class="side four"><Dice value={4} /></div>
+        <div class="side five"><Dice value={5} /></div>
+        <div class="side six"><Dice value={6} /></div>
+    </div>
+{/if}
 
 <style>
     .dice {

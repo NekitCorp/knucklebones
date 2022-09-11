@@ -1,12 +1,13 @@
 import { assign, createMachine } from 'xstate';
 import type { BoardLine, Context, Events, Player } from './types';
-import { checkBoardIsFull, createInitialBoard, getBoardPoints, padEnd, revertPlayer } from './utils';
+import { checkBoardIsFull, checkLineIsFull, createInitialBoard, getBoardPoints, padEnd, revertPlayer } from './utils';
 
 const initialContext: Context = {
     boards: { 1: createInitialBoard(), 2: createInitialBoard() },
     currentMove: 1,
     firstPlayerMove: 1,
     result: null,
+    dice: null,
 };
 
 export function createGameMachine(player: Player) {
@@ -28,6 +29,7 @@ export function createGameMachine(player: Player) {
                                 actions: 'updateBoard',
                             },
                         ],
+                        DICE: [{ target: 'playing', actions: 'setDice' }],
                     },
                 },
                 end: {
@@ -46,19 +48,20 @@ export function createGameMachine(player: Player) {
                 updateBoard: assign({
                     boards: (ctx, e) => {
                         const updatedBoards = { ...ctx.boards };
+                        const dice = ctx.dice;
 
-                        if (e.type === 'MOVE') {
+                        if (e.type === 'MOVE' && dice) {
                             const currentLine = updatedBoards[ctx.currentMove][e.line];
                             const competitor = revertPlayer(ctx.currentMove);
                             const competitorLine = updatedBoards[competitor][e.line];
 
                             // update player board
                             const firstNullIndex = currentLine.findIndex((cell) => cell === null);
-                            currentLine[firstNullIndex] = e.value;
+                            currentLine[firstNullIndex] = dice.value;
 
                             // remove competitor cells if there are matches
                             updatedBoards[competitor][e.line] = padEnd(
-                                competitorLine.filter((cell) => cell !== e.value),
+                                competitorLine.filter((cell) => cell !== dice.value),
                                 3,
                                 null,
                             ) as BoardLine;
@@ -67,6 +70,9 @@ export function createGameMachine(player: Player) {
                         return updatedBoards;
                     },
                     currentMove: (ctx) => revertPlayer(ctx.currentMove),
+                }),
+                setDice: assign({
+                    dice: (ctx, e) => (e.type === 'DICE' ? { value: e.value } : null),
                 }),
                 resetGame: assign((ctx) => ({
                     ...initialContext,
@@ -87,7 +93,7 @@ export function createGameMachine(player: Player) {
             guards: {
                 checkEnd: (ctx) => checkBoardIsFull(ctx.boards[1]) || checkBoardIsFull(ctx.boards[2]),
                 isValidMove: (ctx, e) =>
-                    e.type === 'MOVE' && ctx.boards[ctx.currentMove][e.line].some((cell) => cell === null),
+                    e.type === 'MOVE' && !!ctx.dice && !checkLineIsFull(ctx.boards[ctx.currentMove][e.line]),
             },
         },
     );

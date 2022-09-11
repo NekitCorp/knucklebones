@@ -14,34 +14,38 @@
     }
 </script>
 
-<section>
-    {#if $connectionState.type === 'init'}
-        <p class="loading">⌛ Connection to the PeerServer</p>
-    {:else if $connectionState.type === 'connecting'}
-        <p class="loading">⌛ Connectioning to the remote player</p>
-    {:else if $connectionState.type === 'ready' || $connectionState.type === 'disconnected'}
-        <h1>⚙️ Connection setup</h1>
-        {#if $connectionState.type === 'disconnected'}
-            <p>🚪 Remote peer closes the data connection.</p>
+{#if $connectionState.type !== 'connected'}
+    <section>
+        {#if $connectionState.type === 'init'}
+            <p class="loading">⌛ Connection to the PeerServer</p>
+        {:else if $connectionState.type === 'connecting'}
+            <p class="loading">⌛ Connectioning to the remote player</p>
+        {:else if $connectionState.type === 'ready' || $connectionState.type === 'disconnected'}
+            <h1>⚙️ Connection setup</h1>
+            {#if $connectionState.type === 'disconnected'}
+                <p>🚪 Remote peer closes the data connection.</p>
+            {/if}
+            <p>Send the link below to another player:</p>
+            <p class="link"><a href={link}>{link}</a></p>
+            <CopyButton textToCopy={link} />
+        {:else if $connectionState.type === 'error' || 1}
+            <h1>😵 Error</h1>
+            <p>{$connectionState.error}</p>
+        {:else}
+            <h1>🤔 Wrong state</h1>
+            <p>{$connectionState}</p>
         {/if}
-        <p>Send the link below to another player:</p>
-        <p class="link"><a href={link}>{link}</a></p>
-        <CopyButton textToCopy={link} />
-    {:else if $connectionState.type === 'connected'}
-        <slot />
-    {:else if $connectionState.type === 'error' || 1}
-        <h1>😵 Error</h1>
-        <p>{$connectionState.error}</p>
-    {:else}
-        <h1>🤔 Wrong state</h1>
-        <p>{$connectionState}</p>
-    {/if}
-</section>
+    </section>
+{/if}
+
+{#if $connectionState.type === 'connected'}
+    <slot />
+{/if}
 
 <style>
     section {
         height: 100%;
-        padding: 1rem 2rem;
+        padding: 2rem;
         display: flex;
         flex-direction: column;
         align-items: center;
