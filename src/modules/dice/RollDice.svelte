@@ -15,12 +15,12 @@
 
 {#if roll}
     <div class={`dice show-${value}`}>
-        <div class="side one"><Dice value={1} /></div>
-        <div class="side two"><Dice value={2} /></div>
-        <div class="side three"><Dice value={3} /></div>
-        <div class="side four"><Dice value={4} /></div>
-        <div class="side five"><Dice value={5} /></div>
-        <div class="side six"><Dice value={6} /></div>
+        <div class="side one"><Dice value={1} side="none" /></div>
+        <div class="side two"><Dice value={2} side="none" /></div>
+        <div class="side three"><Dice value={3} side="none" /></div>
+        <div class="side four"><Dice value={4} side="none" /></div>
+        <div class="side five"><Dice value={5} side="none" /></div>
+        <div class="side six"><Dice value={6} side="none" /></div>
     </div>
 {/if}
 

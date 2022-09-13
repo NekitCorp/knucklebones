@@ -33,7 +33,7 @@
             <div class="line line-copmetitor line-block">
                 <h2 class="line-points">{getBoardLinePoints(line)}</h2>
                 {#each line as cell}
-                    <Dice value={cell} />
+                    <Dice value={cell} side="competitor" />
                 {/each}
             </div>
         {/each}
@@ -70,7 +70,7 @@
             <div class="line" on:click={() => makeTurn(i)} class:line-block={!isYourMove || checkLineIsFull(line)}>
                 <h2 class="line-points">{getBoardLinePoints(line)}</h2>
                 {#each line as cell}
-                    <Dice value={cell} />
+                    <Dice value={cell} side="player" />
                 {/each}
             </div>
         {/each}
@@ -95,13 +95,12 @@
         Total: 73vh + 1fr.
     */
 
-    /* 980 / 100 = 9.8px = 1vh */
-
     .container {
         height: 100%;
         display: flex;
         flex-direction: column;
         align-items: center;
+        overflow: hidden;
     }
 
     .player-info {

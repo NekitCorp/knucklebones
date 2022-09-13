@@ -9,22 +9,25 @@
     import type { Cell } from 'src/modules/game/types';
 
     export let value: Cell;
+    export let side: 'player' | 'competitor' | 'none';
+
+    // TODO: on remove "bounceOut"
 </script>
 
 {#if value === 1}
-    <img src={dice1} class="dice" alt="Dice 1" />
+    <img src={dice1} class={`dice ${side}`} alt="Dice 1" />
 {:else if value === 2}
-    <img src={dice2} class="dice" alt="Dice 2" />
+    <img src={dice2} class={`dice ${side}`} alt="Dice 2" />
 {:else if value === 3}
-    <img src={dice3} class="dice" alt="Dice 3" />
+    <img src={dice3} class={`dice ${side}`} alt="Dice 3" />
 {:else if value === 4}
-    <img src={dice4} class="dice" alt="Dice 4" />
+    <img src={dice4} class={`dice ${side}`} alt="Dice 4" />
 {:else if value === 5}
-    <img src={dice5} class="dice" alt="Dice 5" />
+    <img src={dice5} class={`dice ${side}`} alt="Dice 5" />
 {:else if value === 6}
-    <img src={dice6} class="dice" alt="Dice 6" />
+    <img src={dice6} class={`dice ${side}`} alt="Dice 6" />
 {:else}
-    <div class="dice empty" />
+    <div class={`dice empty ${side}`} />
 {/if}
 
 <style>
@@ -38,9 +41,57 @@
         border-radius: 6px;
     }
 
+    .dice:not(.empty) {
+        animation-fill-mode: both;
+        animation-delay: 0s;
+        animation-duration: 0.7s;
+    }
+
+    .dice:not(.empty).player {
+        animation-name: backInUp;
+    }
+
+    .dice:not(.empty).competitor {
+        animation-name: backInDown;
+    }
+
     @media (prefers-color-scheme: dark) {
         .empty {
             border-color: #597686;
+        }
+    }
+
+    @keyframes backInUp {
+        0% {
+            transform: translateY(1200px) scale(0.7);
+            opacity: 0.7;
+        }
+
+        80% {
+            transform: translateY(0px) scale(0.7);
+            opacity: 0.7;
+        }
+
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    @keyframes backInDown {
+        0% {
+            transform: translateY(-1200px) scale(0.7);
+            opacity: 0.7;
+        }
+
+        80% {
+            transform: translateY(0px) scale(0.7);
+            opacity: 0.7;
+        }
+
+        100% {
+            transform: scale(1);
+            opacity: 1;
         }
     }
 </style>
