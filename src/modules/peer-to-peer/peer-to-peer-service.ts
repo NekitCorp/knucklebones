@@ -2,50 +2,56 @@ import { Peer } from 'peerjs';
 import { get, writable } from 'svelte/store';
 
 type Connection = any;
-export type ConnectionSide = 'host' | 'client';
 type ConnectionState =
     | { type: 'init' }
-    | { type: 'ready' }
+    | { type: 'ready'; peerId: string }
     | { type: 'connecting' }
-    | { type: 'connected'; connection: Connection; side: ConnectionSide }
+    | { type: 'connected'; connection: Connection }
     | { type: 'disconnected' }
     | { type: 'error'; error: unknown };
 
 export class PeerToPeerService {
-    public id = writable<string>('');
     public connectionState = writable<ConnectionState>({ type: 'init' });
 
     protected readonly peer = new Peer();
 
-    constructor(private onMessage: (data: unknown) => void) {
-        this.peer.on('open', (id) => {
+    constructor(idParam: string | null, private onMessage: (data: unknown) => void) {
+        this.peer.on('open', (peerId) => {
             console.log('Connection to the PeerServer is established.');
-            this.id.set(id);
-            this.connectionState.set({ type: 'ready' });
+
+            if (idParam) {
+                // if the client, connect to another peer by using `idParam`
+                this.onConnection(this.peer.connect(idParam));
+            } else {
+                // if the host, move to `ready` state
+                this.connectionState.set({ type: 'ready', peerId });
+            }
         });
+
         this.peer.on('error', (error) => {
             console.error('Failed to connect to the PeerServer.', error);
             this.connectionState.set({ type: 'error', error });
         });
-        this.peer.on('connection', (connection) => {
-            console.log('New data connection is established from a remote peer.');
-            this.onConnection(connection, 'host');
-        });
-    }
 
-    public connect(id: string) {
-        this.onConnection(this.peer.connect(id), 'client');
+        // if the host, then we are waiting for the connection
+        if (!idParam) {
+            this.peer.on('connection', (connection) => {
+                console.log('New data connection is established from a remote peer.');
+                this.onConnection(connection);
+            });
+        }
     }
 
     public send(message: unknown) {
         const connectionState = get(this.connectionState);
 
         if (connectionState.type === 'connected') {
+            console.log('%c⬇️ Send data to the remote peer.', 'color: red', message);
             connectionState.connection.send(message);
         }
     }
 
-    private onConnection(connection: Connection, side: ConnectionSide) {
+    private onConnection(connection: Connection) {
         const connectionState = get(this.connectionState);
 
         // allow only 1 connection
@@ -54,18 +60,14 @@ export class PeerToPeerService {
 
             connection.on('open', () => {
                 console.log('The connection is established and ready-to-use.');
-                this.connectionState.set({
-                    type: 'connected',
-                    connection,
-                    side,
-                });
+                this.connectionState.set({ type: 'connected', connection });
             });
             connection.on('close', () => {
                 console.log('Either you or the remote peer closes the data connection.');
                 this.connectionState.set({ type: 'disconnected' });
             });
             connection.on('data', (data: unknown) => {
-                console.log('Data is received from the remote peer.', data);
+                console.log('%c⬆️ Data is received from the remote peer.', 'color: green', data);
                 this.onMessage(data);
             });
             connection.on('error', (error: unknown) => {

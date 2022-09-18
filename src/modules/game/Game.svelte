@@ -1,98 +1,119 @@
 <script lang="ts">
     import Dice from 'src/modules/dice/Dice.svelte';
     import RollDice from 'src/modules/dice/RollDice.svelte';
-    import { createEventDispatcher } from 'svelte';
+    import { createEventDispatcher, onMount } from 'svelte';
     import type { GameService } from './game-service';
-    import type { GameEvent } from './types';
-    import { checkLineIsFull, getBoardLinePoints, getBoardPoints, revertPlayer } from './utils';
+    import type { GameAction, Line } from './types';
+    import {
+        cellMatches,
+        checkLineIsFull,
+        getBoardLinePoints,
+        getBoardPoints,
+        getPlayerEmoji,
+        randomDice,
+    } from './utils';
 
     export let game: GameService;
-    const { state, player } = game;
-    const competitor = revertPlayer(player);
-    $: isYourMove = player === $state.context.currentMove;
+    const { state, player, competitor } = game;
+    $: isYourMove = $state.type === 'playing' && player === $state.currentMove;
+    $: disabled = $state.type !== 'playing' || $state.pause || !isYourMove;
 
     const dispatch = createEventDispatcher();
-    const move = (event: GameEvent) => {
-        dispatch('move', event);
-    };
+    const action = (ga: GameAction) => dispatch('action', ga);
+    const makeTurn = (line: number) => action({ type: 'GAME', line: line as Line });
+    const reset = () => action({ type: 'RESET' });
 
-    function makeTurn(line: number) {
-        if (isYourMove && !checkLineIsFull($state.context.boards[player][line])) {
-            move({ type: 'MOVE', line: line as 0 | 1 | 2 });
+    onMount(() => {
+        game.startGame();
+
+        // the host rolls a dice on successful connection
+        if (player === 1) {
+            action({ type: 'DICE', value: randomDice() });
         }
-    }
+    });
 </script>
 
-<div class="container">
-    <!-- competitor info -->
-    <h2 class="player-info competitor">{competitor === 1 ? '🐱' : '🐶'} Player #{competitor}</h2>
+{#if $state.type === 'playing' || $state.type === 'end'}
+    <div class="container">
+        <!-- competitor info -->
+        <h2 class="player-info competitor" class:turn={!isYourMove}>
+            {getPlayerEmoji(competitor)} Player #{competitor}
+        </h2>
 
-    <!-- competitor game board -->
-    <div class="board">
-        {#each $state.context.boards[competitor] as line}
-            <div class="line line-copmetitor line-block">
-                <h2 class="line-points">{getBoardLinePoints(line)}</h2>
-                {#each line as cell}
-                    <Dice value={cell} side="competitor" />
-                {/each}
-            </div>
-        {/each}
+        <!-- competitor game board -->
+        <div class="board">
+            {#each $state.boards[competitor] as line}
+                <button class="line line-copmetitor" disabled>
+                    <h2 class="line-points">{getBoardLinePoints(line)}</h2>
+                    {#each line as cell (cell.id)}
+                        <Dice
+                            value={cell.value}
+                            removing={cell.removing}
+                            doubled={cellMatches(cell, line)}
+                            side="competitor"
+                        />
+                    {/each}
+                </button>
+            {/each}
+        </div>
+
+        <!-- competitor points -->
+        <h2 class="points">Score: {getBoardPoints($state.boards[competitor])}</h2>
+
+        <!-- game state -->
+        <div class="state">
+            {#if $state.type === 'playing'}
+                <h2>
+                    {getPlayerEmoji($state.currentMove)}
+                    {isYourMove ? 'Your turn' : "Opponent's move"}
+                </h2>
+                <RollDice value={$state.dice} />
+            {:else if $state.type === 'end'}
+                {#if $state.result === 'win'}<h2>🏆 You won!</h2>{/if}
+                {#if $state.result === 'lose'}<h2>😥 You lose</h2>{/if}
+                {#if $state.result === 'draw'}<h2>🤝 Draw</h2>{/if}
+                <button on:click={reset}>🔄 Reset</button>
+            {/if}
+        </div>
+
+        <!-- player points -->
+        <h2 class="points">Score: {getBoardPoints($state.boards[player])}</h2>
+
+        <!-- player game board -->
+        <div class="board">
+            {#each $state.boards[player] as line, i}
+                <button class="line" disabled={disabled || checkLineIsFull(line)} on:click={() => makeTurn(i)}>
+                    <h2 class="line-points">{getBoardLinePoints(line)}</h2>
+                    {#each line as cell (cell.id)}
+                        <Dice
+                            value={cell.value}
+                            removing={cell.removing}
+                            doubled={cellMatches(cell, line)}
+                            side="player"
+                        />
+                    {/each}
+                </button>
+            {/each}
+        </div>
+
+        <!-- player info -->
+        <h2 class="player-info player" class:turn={isYourMove}>{getPlayerEmoji(player)} Player #{player}</h2>
     </div>
-
-    <!-- competitor points -->
-    <h2 class="points">{getBoardPoints($state.context.boards[competitor])}</h2>
-
-    <!-- game state -->
-    <div class="state">
-        {#if $state.value === 'playing'}
-            <h2>
-                {$state.context.currentMove === 1 ? '🐱' : '🐶'}
-                {isYourMove ? 'Your turn' : "Opponent's move"}
-            </h2>
-            <RollDice roll={$state.context.dice} />
-        {:else if $state.value === 'end'}
-            {#if $state.context.result === 'win'}<h2>🏆 You won!</h2>{/if}
-            {#if $state.context.result === 'lose'}<h2>😥 You lose</h2>{/if}
-            {#if $state.context.result === 'draw'}<h2>🤝 Draw</h2>{/if}
-            <button on:click={() => move('RESET')}>🔄 Reset</button>
-        {:else}
-            <h2>Wrong state!</h2>
-            <p>{$state.value}</p>
-        {/if}
-    </div>
-
-    <!-- player points -->
-    <h2 class="points">{getBoardPoints($state.context.boards[player])}</h2>
-
-    <!-- player game board -->
-    <div class="board">
-        {#each $state.context.boards[player] as line, i}
-            <div class="line" on:click={() => makeTurn(i)} class:line-block={!isYourMove || checkLineIsFull(line)}>
-                <h2 class="line-points">{getBoardLinePoints(line)}</h2>
-                {#each line as cell}
-                    <Dice value={cell} side="player" />
-                {/each}
-            </div>
-        {/each}
-    </div>
-
-    <!-- player info -->
-    <h2 class="player-info player">{player === 1 ? '🐱' : '🐶'} Player #{player}</h2>
-</div>
+{/if}
 
 <style>
     /*
         Layout.
         -------
-        [competitor info]        5.5vh = 3vh * 1.5 (line-height) + 1vh (margin-top)
+        [competitor info]        15vh = 4vh (margin-top) + 4vh (font-size) + 7vh (margin-bottom)
         [competitor game board]  25vh = 2 * 2vh (padding) + 3 * 5vh (cell) + 3 * 1vh (gap) + 3vh (points)
-        [competitor points]      6vh = 4vh * 1.5 (line-height) 
+        [competitor points]      6vh = 3vh (font-size) * 2 (line-height) 
         [game state]             1fr 
-        [player points]          6vh = 4vh * 1.5 (line-height)
-        [player game board]      25vh 
-        [player info]            5.5vh = 3vh * 1.5 (line-height) + 1vh (margin-bottom) 
+        [player points]          6vh = 3vh (font-size) * 2 (line-height)
+        [player game board]      25vh ...
+        [player info]            15vh = 7vh (margin-top) + 4vh (font-size) + 4vh (margin-bottom)
         -------
-        Total: 73vh + 1fr.
+        Total: 92vh + 1fr.
     */
 
     .container {
@@ -101,17 +122,44 @@
         flex-direction: column;
         align-items: center;
         overflow: hidden;
+        position: relative;
     }
 
     .player-info {
-        text-decoration: underline dotted;
-        font-size: 3vh;
+        font-size: 4vh;
+        line-height: 1;
     }
     .competitor {
-        margin-bottom: 1vh;
+        margin-top: 4vh;
+        margin-bottom: 7vh;
     }
     .player {
-        margin-top: 1vh;
+        margin-top: 7vh;
+        margin-bottom: 4vh;
+    }
+    .player-info::before {
+        content: '';
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        width: max(100vw, 100vh);
+        height: max(100vw, 100vh);
+        border-radius: 50%;
+        background: rgba(144, 193, 221, 0.3);
+        z-index: -1;
+        transition: top 0.7s ease-out, bottom 0.7s ease-out;
+    }
+    .competitor::before {
+        bottom: 88vh;
+    }
+    .player::before {
+        top: 88vh;
+    }
+    .turn.competitor::before {
+        bottom: 54vh;
+    }
+    .turn.player::before {
+        top: 54vh;
     }
 
     .line-points {
@@ -129,26 +177,41 @@
     .line {
         display: flex;
         flex-direction: column;
+        align-items: center;
         gap: 1vh;
         padding: 2vh;
-        background-color: #296e76;
+        color: #ffffff;
+        background-color: #5e859a;
         border-radius: 10px;
-        color: white;
         cursor: pointer;
+        border: none;
     }
     .line-copmetitor {
         flex-direction: column-reverse;
     }
-    .line-block {
+    .line:disabled {
         cursor: not-allowed;
-        background-color: #1a464b;
+        background-color: #394850;
     }
-    .line:not(.line-block):hover {
-        background-color: #33858f;
+    .line:not(:disabled):hover {
+        background-color: #90c1dd;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        .line {
+            background-color: #b0b0b0;
+        }
+        .line:disabled {
+            background-color: #4f4f4f;
+        }
+        .line:not(:disabled):hover {
+            background-color: #eeeeee;
+        }
     }
 
     .points {
-        font-size: 4vh;
+        font-size: 3vh;
+        line-height: 2;
     }
 
     .state {

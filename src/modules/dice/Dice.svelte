@@ -6,26 +6,26 @@
     import dice4 from 'src/assets/dice-4.svg';
     import dice5 from 'src/assets/dice-5.svg';
     import dice6 from 'src/assets/dice-6.svg';
-    import type { Cell } from 'src/modules/game/types';
+    import type { DiceValue } from 'src/modules/game/types';
 
-    export let value: Cell;
+    export let value: DiceValue | null;
     export let side: 'player' | 'competitor' | 'none';
-
-    // TODO: on remove "bounceOut"
+    export let removing = false;
+    export let doubled = false;
 </script>
 
 {#if value === 1}
-    <img src={dice1} class={`dice ${side}`} alt="Dice 1" />
+    <img src={dice1} class={`dice ${side}`} class:removing class:doubled alt="Dice 1" />
 {:else if value === 2}
-    <img src={dice2} class={`dice ${side}`} alt="Dice 2" />
+    <img src={dice2} class={`dice ${side}`} class:removing class:doubled alt="Dice 2" />
 {:else if value === 3}
-    <img src={dice3} class={`dice ${side}`} alt="Dice 3" />
+    <img src={dice3} class={`dice ${side}`} class:removing class:doubled alt="Dice 3" />
 {:else if value === 4}
-    <img src={dice4} class={`dice ${side}`} alt="Dice 4" />
+    <img src={dice4} class={`dice ${side}`} class:removing class:doubled alt="Dice 4" />
 {:else if value === 5}
-    <img src={dice5} class={`dice ${side}`} alt="Dice 5" />
+    <img src={dice5} class={`dice ${side}`} class:removing class:doubled alt="Dice 5" />
 {:else if value === 6}
-    <img src={dice6} class={`dice ${side}`} alt="Dice 6" />
+    <img src={dice6} class={`dice ${side}`} class:removing class:doubled alt="Dice 6" />
 {:else}
     <div class={`dice empty ${side}`} />
 {/if}
@@ -34,11 +34,22 @@
     .dice {
         width: var(--dice-size);
         height: var(--dice-size);
+        position: relative;
+    }
+
+    .removing {
+        animation-name: shake !important;
+        animation-iteration-count: infinite;
+    }
+
+    .doubled {
+        box-shadow: 0 0 10px 3px #dd8500;
+        border-radius: 6px;
     }
 
     .empty {
-        border: 1px dashed #eee;
-        border-radius: 6px;
+        border: 2px dashed #eee;
+        border-radius: 5px;
     }
 
     .dice:not(.empty) {
@@ -92,6 +103,28 @@
         100% {
             transform: scale(1);
             opacity: 1;
+        }
+    }
+
+    @keyframes shake {
+        from,
+        to {
+            transform: translate3d(0, 0, 0);
+        }
+
+        10%,
+        30%,
+        50%,
+        70%,
+        90% {
+            transform: translate3d(-5px, 0, 0);
+        }
+
+        20%,
+        40%,
+        60%,
+        80% {
+            transform: translate3d(5px, 0, 0);
         }
     }
 </style>

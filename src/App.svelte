@@ -1,46 +1,37 @@
 <script lang="ts">
     import { GameService } from './modules/game';
     import Game from './modules/game/Game.svelte';
-    import type { GameEvent } from './modules/game/types';
+    import type { GameAction } from './modules/game/types';
     import { randomDice } from './modules/game/utils';
     import { PeerToPeerService } from './modules/peer-to-peer';
     import Connection from './modules/peer-to-peer/Connection.svelte';
 
-    const p2p = new PeerToPeerService((data) => {
-        const event = data as GameEvent;
+    const idParam = new URLSearchParams(window.location.search).get('id');
+    const p2p = new PeerToPeerService(idParam, onMessage);
+    const game = new GameService(idParam ? 2 : 1);
 
-        if (game) {
-            game.send(event);
+    function onMessage(data: unknown) {
+        const action = data as GameAction;
 
-            if (typeof event !== 'string' && event.type === 'MOVE') {
-                const dice = randomDice();
-                const event: GameEvent = { type: 'DICE', value: dice };
-                game.send(event);
-                p2p.send(event);
-            }
+        game.action(action);
+
+        // roll the dice after the opponent's move
+        if (action.type === 'GAME') {
+            const dice = randomDice();
+            const diceAction: GameAction = { type: 'DICE', value: dice };
+            game.action(diceAction);
+            p2p.send(diceAction);
         }
-    });
-    const { connectionState } = p2p;
-
-    $: game = $connectionState.type === 'connected' ? new GameService($connectionState.side === 'host' ? 1 : 2) : null;
-    $: if ($connectionState.type === 'connected' && $connectionState.side === 'host' && game) {
-        const dice = randomDice();
-        const event: GameEvent = { type: 'DICE', value: dice };
-        game.send(event);
-        p2p.send(event);
     }
 
-    function move(event: CustomEvent<GameEvent>) {
-        if (event.detail && game) {
-            // change game state
-            game.send(event.detail);
-
-            // send game event to another player
+    function action(event: CustomEvent<GameAction>) {
+        // if game turn is valid, send game event to the opponent
+        if (game.action(event.detail)) {
             p2p.send(event.detail);
         }
     }
 </script>
 
 <Connection {p2p}>
-    {#if game}<Game {game} on:move={move} />{/if}
+    <Game {game} on:action={action} />
 </Connection>

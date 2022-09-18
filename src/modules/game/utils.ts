@@ -1,11 +1,14 @@
-import type { Board, BoardLine, DiceValue, Player } from './types';
+import type { Board, BoardLine, Cell, DiceValue, Player } from './types';
 
 export function nonNullable<T>(value: T): value is NonNullable<T> {
     return value !== null && value !== undefined;
 }
 
-export function padEnd<T, K>(array: T[], minLength: number, fillValue: K): (T | K)[] {
-    return Object.assign(new Array(minLength).fill(fillValue), array);
+export function padEnd<T, K>(array: T[], minLength: number, fillValue: () => K): (T | K)[] {
+    return Object.assign(
+        new Array(minLength).fill(null).map(() => fillValue()),
+        array,
+    );
 }
 
 export function randomNumber(min: number, max: number): number {
@@ -16,7 +19,13 @@ export function randomDice(): DiceValue {
     return randomNumber(1, 6) as DiceValue;
 }
 
-export const createInitialBoardLine = (): BoardLine => [null, null, null];
+export const createInitialCell = (value: DiceValue | null = null): Cell => ({
+    id: getNewCellId(),
+    removing: false,
+    value,
+});
+
+export const createInitialBoardLine = (): BoardLine => [createInitialCell(), createInitialCell(), createInitialCell()];
 
 export const createInitialBoard = (): Board => [
     createInitialBoardLine(),
@@ -26,8 +35,8 @@ export const createInitialBoard = (): Board => [
 
 export function getBoardLinePoints(boardLine: BoardLine): number {
     return boardLine
-        .filter(nonNullable)
-        .map((cell) => cell * boardLine.filter((c) => c === cell).length)
+        .filter((cell) => cell.value !== null)
+        .map((cell) => (cell.value as DiceValue) * boardLine.filter((c) => c.value === cell.value).length)
         .reduce((a, b) => a + b, 0);
 }
 
@@ -44,5 +53,19 @@ export function revertPlayer(player: Player) {
 }
 
 export function checkLineIsFull(line: BoardLine): boolean {
-    return line.every((cell) => cell !== null);
+    return line.every((cell) => cell.value !== null);
+}
+
+let cellId = 0;
+
+export function getNewCellId() {
+    return ++cellId;
+}
+
+export function cellMatches(cell: Cell, line: BoardLine): boolean {
+    return line.filter((c) => c.value === cell.value).length > 1;
+}
+
+export function getPlayerEmoji(player: Player) {
+    return player === 1 ? '🦄' : '🐼';
 }

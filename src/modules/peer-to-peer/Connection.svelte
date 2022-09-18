@@ -3,15 +3,9 @@
     import type { PeerToPeerService } from './peer-to-peer-service';
 
     export let p2p: PeerToPeerService;
-    const { id, connectionState } = p2p;
+    const { connectionState } = p2p;
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const idParam = urlParams.get('id');
-
-    $: link = `${window.location.href}?id=${$id}`;
-    $: if ($connectionState.type === 'ready' && idParam) {
-        p2p.connect(idParam);
-    }
+    $: link = $connectionState.type === 'ready' ? `${window.location.href}?id=${$connectionState.peerId}` : '';
 </script>
 
 {#if $connectionState.type !== 'connected'}
@@ -20,11 +14,10 @@
             <p class="loading">⌛ Connection to the PeerServer</p>
         {:else if $connectionState.type === 'connecting'}
             <p class="loading">⌛ Connectioning to the remote player</p>
-        {:else if $connectionState.type === 'ready' || $connectionState.type === 'disconnected'}
+        {:else if $connectionState.type === 'disconnected'}
+            <p>🚪 Remote peer closes the data connection.</p>
+        {:else if $connectionState.type === 'ready'}
             <h1>⚙️ Connection setup</h1>
-            {#if $connectionState.type === 'disconnected'}
-                <p>🚪 Remote peer closes the data connection.</p>
-            {/if}
             <p>Send the link below to another player:</p>
             <p class="link"><a href={link}>{link}</a></p>
             <CopyButton textToCopy={link} />
