@@ -12,11 +12,18 @@
         getPlayerEmoji,
         randomDice,
     } from './utils';
+    import JSConfetti from 'js-confetti';
 
     export let game: GameService;
     const { state, player, competitor } = game;
     $: isYourMove = $state.type === 'playing' && player === $state.currentMove;
     $: disabled = $state.type !== 'playing' || $state.pause || !isYourMove;
+
+    // release confetti when you win
+    const jsConfetti = new JSConfetti();
+    $: $state.type === 'end' &&
+        $state.result === 'win' &&
+        jsConfetti.addConfetti({ emojis: ['🌈', '⚡️', '💥', '✨', '💫', '🌸', '🎉', '🎊', '💩'] });
 
     const dispatch = createEventDispatcher();
     const action = (ga: GameAction) => dispatch('action', ga);

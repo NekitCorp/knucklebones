@@ -10,6 +10,7 @@
         "check": "svelte-check --tsconfig ./tsconfig.json"
     },
     "dependencies": {
+        "js-confetti": "^0.11.0",
         "peerjs": "1.4.7"
     },
     "devDependencies": {
