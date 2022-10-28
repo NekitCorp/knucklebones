@@ -23,7 +23,7 @@
         {:else if $connectionState.type === 'ready'}
             <div class="ready-container">
                 <h1 class="game-title">🎲 KNUCKLEBONES 🎲</h1>
-                <p>Send the link below to another player: <a href={link}>{link}</a></p>
+                <p>Send the link below to another player:<br /><a href={link}>{link}</a></p>
 
                 <CopyButton textToCopy={link} />
                 <QRCode value={link} />
