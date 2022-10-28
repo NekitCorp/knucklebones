@@ -1,5 +1,6 @@
 <script lang="ts">
     import CopyButton from 'src/components/CopyButton.svelte';
+    import QRCode from 'src/components/QRCode.svelte';
     import type { PeerToPeerService } from './peer-to-peer-service';
 
     export let p2p: PeerToPeerService;
@@ -20,10 +21,13 @@
             <p>Remote peer closes the data connection.</p>
             <button class="btn" on:click={goToStartPage}>🚪 Go to start page</button>
         {:else if $connectionState.type === 'ready'}
-            <h1 class="game-title">🎲 KNUCKLEBONES 🎲</h1>
-            <p>Send the link below to another player:</p>
-            <p class="link"><a href={link}>{link}</a></p>
-            <CopyButton textToCopy={link} />
+            <div class="ready-container">
+                <h1 class="game-title">🎲 KNUCKLEBONES 🎲</h1>
+                <p>Send the link below to another player: <a href={link}>{link}</a></p>
+
+                <CopyButton textToCopy={link} />
+                <QRCode value={link} />
+            </div>
         {:else if $connectionState.type === 'error' || 1}
             <h1>😵 Error</h1>
             <p>{$connectionState.error}</p>
@@ -47,6 +51,13 @@
         align-items: center;
         justify-content: center;
         text-align: center;
+    }
+
+    .ready-container {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        align-items: center;
     }
 
     .game-title {
@@ -74,10 +85,5 @@
         100% {
             content: '';
         }
-    }
-
-    .link {
-        line-height: 1;
-        margin: 1.5rem 0;
     }
 </style>

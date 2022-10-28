@@ -1,4 +1,5 @@
 import { get, writable } from 'svelte/store';
+import { soundService } from '../sound';
 import type { Board, BoardLine, DiceValue, GameAction, GameState, Line, Player } from './types';
 import {
     checkBoardIsFull,
@@ -67,6 +68,8 @@ export class GameService {
         const firstNullIndex = currentLine.findIndex((cell) => cell.value === null);
         currentLine[firstNullIndex] = createInitialCell(dice);
 
+        soundService.playClick();
+
         // Remove opposite cells if there are matches
         if (oppositeLine.filter((cell) => cell.value === dice).length) {
             oppositeLine
@@ -74,6 +77,8 @@ export class GameService {
                 .forEach((cell) => {
                     cell.removing = true;
                 });
+
+            soundService.playDestroy();
 
             setTimeout(() => {
                 updatedBoards[opposite][line] = padEnd(
@@ -87,7 +92,12 @@ export class GameService {
         }
 
         if (this.checkEnd(updatedBoards)) {
-            this.state.set({ type: 'end', result: this.getEndResult(updatedBoards), boards: updatedBoards });
+            const result = this.getEndResult(updatedBoards);
+            this.state.set({ type: 'end', result, boards: updatedBoards });
+
+            if (result === 'win') {
+                soundService.playTada();
+            }
         } else {
             this.state.update((s) => ({
                 ...s,
@@ -107,6 +117,8 @@ export class GameService {
         if (state.type !== 'playing') return false;
 
         this.state.update((s) => ({ ...s, dice: value, pause: true }));
+
+        soundService.playDice();
 
         // wait roll the dice animation
         setTimeout(() => {
