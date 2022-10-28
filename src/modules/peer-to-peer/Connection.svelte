@@ -6,6 +6,8 @@
     const { connectionState } = p2p;
 
     $: link = $connectionState.type === 'ready' ? `${window.location.href}?id=${$connectionState.peerId}` : '';
+
+    const goToStartPage = () => ((window as Window).location = window.location.pathname);
 </script>
 
 {#if $connectionState.type !== 'connected'}
@@ -15,9 +17,10 @@
         {:else if $connectionState.type === 'connecting'}
             <p class="loading">⌛ Connectioning to the remote player</p>
         {:else if $connectionState.type === 'disconnected'}
-            <p>🚪 Remote peer closes the data connection.</p>
+            <p>Remote peer closes the data connection.</p>
+            <button class="btn" on:click={goToStartPage}>🚪 Go to start page</button>
         {:else if $connectionState.type === 'ready'}
-            <h1>🎲 KNUCKLEBONES 🎲</h1>
+            <h1 class="game-title">🎲 KNUCKLEBONES 🎲</h1>
             <p>Send the link below to another player:</p>
             <p class="link"><a href={link}>{link}</a></p>
             <CopyButton textToCopy={link} />
@@ -44,6 +47,10 @@
         align-items: center;
         justify-content: center;
         text-align: center;
+    }
+
+    .game-title {
+        white-space: nowrap;
     }
 
     .loading::after {
