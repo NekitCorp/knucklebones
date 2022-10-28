@@ -31,9 +31,11 @@
         {:else if $connectionState.type === 'error' || 1}
             <h1>😵 Error</h1>
             <p>{$connectionState.error}</p>
+            <button on:click={goToStartPage}>🚪 Go to start page</button>
         {:else}
             <h1>🤔 Wrong state</h1>
             <p>{$connectionState}</p>
+            <button on:click={goToStartPage}>🚪 Go to start page</button>
         {/if}
     </section>
 {/if}
