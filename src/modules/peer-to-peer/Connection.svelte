@@ -19,7 +19,7 @@
             <p class="loading">⌛ Connectioning to the remote player</p>
         {:else if $connectionState.type === 'disconnected'}
             <p>Remote peer closes the data connection.</p>
-            <button class="btn" on:click={goToStartPage}>🚪 Go to start page</button>
+            <button on:click={goToStartPage}>🚪 Go to start page</button>
         {:else if $connectionState.type === 'ready'}
             <div class="ready-container">
                 <h1 class="game-title">🎲 KNUCKLEBONES 🎲</h1>

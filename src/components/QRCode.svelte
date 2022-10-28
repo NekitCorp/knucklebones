@@ -42,4 +42,13 @@
     });
 </script>
 
-<img src={image} alt={value} class={className} />
+<div class="wrapper">
+    <img src={image} alt={value} class={className} />
+</div>
+
+<style>
+    .wrapper {
+        background: #fff;
+        padding: 4px;
+    }
+</style>

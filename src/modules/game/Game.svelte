@@ -201,9 +201,11 @@
         cursor: not-allowed;
         background-color: var(--game-line-disabled-color);
     }
-    .line:not(:disabled):hover {
-        background-color: var(--game-line-active-hover-color);
-        box-shadow: var(--game-line-active-hover-shadow);
+    @media (hover: hover) {
+        .line:not(:disabled):hover {
+            background-color: var(--game-line-active-hover-color);
+            box-shadow: var(--game-line-active-hover-shadow);
+        }
     }
 
     .points {

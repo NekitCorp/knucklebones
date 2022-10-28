@@ -1,4 +1,5 @@
 <script lang="ts">
+    import MobileSafariTip from './components/MobileSafariTip.svelte';
     import { GameService } from './modules/game';
     import Game from './modules/game/Game.svelte';
     import type { GameAction } from './modules/game/types';
@@ -35,3 +36,5 @@
 <Connection {p2p}>
     <Game {game} on:action={action} />
 </Connection>
+
+<MobileSafariTip />

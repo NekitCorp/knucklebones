@@ -13,4 +13,4 @@
     }
 </script>
 
-<button class="btn" on:click={copy}>{wait ? '✔️' : '📋'} {wait ? 'Copied!' : 'Copy'}</button>
+<button on:click={copy}>{wait ? '✔️' : '📋'} {wait ? 'Copied!' : 'Copy'}</button>
