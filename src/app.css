@@ -12,11 +12,40 @@
     color-scheme: light dark;
 
     --dice-size: 5vh;
+
+    /* Colors. Light Theme. */
+    --background-color: #fff;
+    --link-color: #646cff;
+    --link-hover-color: #747bff;
+    --button-color: #213547;
+    --button-background-color: #f9f9f9;
+    --game-line-color: #fffbfb;
+    --game-line-active-color: #5e859a;
+    --game-line-active-hover-color: #90c1dd;
+    --game-line-active-hover-shadow: -8px -8px 24px rgba(144, 193, 221, 0.5), 8px 8px 24px rgba(144, 193, 221, 0.5);
+    --game-line-disabled-color: #394850;
+    --game-overlay-color: rgba(144, 193, 221, 0.3);
+    --dice-empty-color: #eeeeee;
+    --dice-highlight-color: #dd8500;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        /* Colors. Dark Theme. */
+        --background-color: #2f2f2f;
+        --button-color: rgba(255, 255, 255, 0.87);
+        --button-background-color: #1a1a1a;
+        --game-line-color: #000000;
+        --game-line-active-color: #b0b0b0;
+        --game-line-active-hover-color: #eeeeee;
+        --game-line-disabled-color: #4f4f4f;
+        --dice-empty-color: #597686;
+    }
 }
 
 #app {
     height: 100%;
-    background-color: #fff;
+    background-color: var(--background-color);
 }
 
 h1 {
@@ -32,11 +61,11 @@ p {
 }
 
 a {
-    color: #646cff;
+    color: var(--link-color);
     text-decoration: inherit;
 }
 a:hover {
-    color: #747bff;
+    color: var(--link-hover-color);
     text-decoration: underline;
 }
 
@@ -45,26 +74,15 @@ button {
     border: 1px solid transparent;
     padding: 0.6rem 1.2rem;
     font-size: 1rem;
-    color: #213547;
-    background-color: #f9f9f9;
+    color: var(--button-color);
+    background-color: var(--button-background-color);
     cursor: pointer;
     transition: border-color 0.25s;
 }
 button:hover {
-    border-color: #646cff;
+    border-color: var(--link-color);
 }
 button:focus,
 button:focus-visible {
     outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: dark) {
-    #app {
-        background-color: #2f2f2f;
-    }
-
-    button {
-        color: rgba(255, 255, 255, 0.87);
-        background-color: #1a1a1a;
-    }
 }

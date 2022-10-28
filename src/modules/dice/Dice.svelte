@@ -43,12 +43,12 @@
     }
 
     .doubled {
-        box-shadow: 0 0 10px 3px #dd8500;
+        box-shadow: 0 0 10px 3px var(--dice-highlight-color);
         border-radius: 6px;
     }
 
     .empty {
-        border: 2px dashed #eee;
+        border: 2px dashed var(--dice-empty-color);
         border-radius: 5px;
     }
 
@@ -64,12 +64,6 @@
 
     .dice:not(.empty).competitor {
         animation-name: backInDown;
-    }
-
-    @media (prefers-color-scheme: dark) {
-        .empty {
-            border-color: #597686;
-        }
     }
 
     @keyframes backInUp {

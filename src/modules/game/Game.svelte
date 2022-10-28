@@ -145,7 +145,7 @@
         width: max(100vw, 100vh);
         height: max(100vw, 100vh);
         border-radius: 50%;
-        background: rgba(144, 193, 221, 0.3);
+        background: var(--game-overlay-color);
         z-index: -1;
         transition: top 0.7s ease-out, bottom 0.7s ease-out;
     }
@@ -180,33 +180,23 @@
         align-items: center;
         gap: 1vh;
         padding: 2vh;
-        color: #ffffff;
-        background-color: #5e859a;
+        color: var(--game-line-color);
+        background-color: var(--game-line-active-color);
         border-radius: 10px;
         cursor: pointer;
         border: none;
+        outline: none;
     }
     .line-copmetitor {
         flex-direction: column-reverse;
     }
     .line:disabled {
         cursor: not-allowed;
-        background-color: #394850;
+        background-color: var(--game-line-disabled-color);
     }
     .line:not(:disabled):hover {
-        background-color: #90c1dd;
-    }
-
-    @media (prefers-color-scheme: dark) {
-        .line {
-            background-color: #b0b0b0;
-        }
-        .line:disabled {
-            background-color: #4f4f4f;
-        }
-        .line:not(:disabled):hover {
-            background-color: #eeeeee;
-        }
+        background-color: var(--game-line-active-hover-color);
+        box-shadow: var(--game-line-active-hover-shadow);
     }
 
     .points {
