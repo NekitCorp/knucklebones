@@ -12,6 +12,7 @@ export type GameState =
           boards: Record<Player, Board>;
           currentMove: Player;
           dice: DiceValue | null;
+          /** dice spinning */
           pause: boolean;
       }
     | { type: 'end'; result: 'win' | 'lose' | 'draw'; boards: Record<Player, Board> };

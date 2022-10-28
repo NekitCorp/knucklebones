@@ -68,7 +68,7 @@ export class GameService {
         currentLine[firstNullIndex] = createInitialCell(dice);
 
         // Remove opposite cells if there are matches
-        if (oppositeLine.filter((cell) => cell.value === dice)) {
+        if (oppositeLine.filter((cell) => cell.value === dice).length) {
             oppositeLine
                 .filter((cell) => cell.value === dice)
                 .forEach((cell) => {
@@ -82,7 +82,7 @@ export class GameService {
                     createInitialCell,
                 ) as BoardLine;
 
-                this.state.update((s) => ({ ...s, boards: updatedBoards }));
+                this.state.update((s) => (s.type === 'playing' ? { ...s, boards: updatedBoards } : s));
             }, 1500);
         }
 

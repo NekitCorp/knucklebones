@@ -16,7 +16,7 @@
         game.action(action);
 
         // roll the dice after the opponent's move
-        if (action.type === 'GAME') {
+        if (action.type === 'GAME' || action.type === 'RESET') {
             const dice = randomDice();
             const diceAction: GameAction = { type: 'DICE', value: dice };
             game.action(diceAction);

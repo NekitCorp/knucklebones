@@ -17,7 +17,7 @@
         {:else if $connectionState.type === 'disconnected'}
             <p>🚪 Remote peer closes the data connection.</p>
         {:else if $connectionState.type === 'ready'}
-            <h1>⚙️ Connection setup</h1>
+            <h1>🎲 KNUCKLEBONES 🎲</h1>
             <p>Send the link below to another player:</p>
             <p class="link"><a href={link}>{link}</a></p>
             <CopyButton textToCopy={link} />
