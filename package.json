@@ -13,12 +13,13 @@
         "howler": "2.2.3",
         "js-confetti": "0.11.0",
         "peerjs": "1.4.7",
-        "qrious": "^4.0.2"
+        "qrcode": "1.5.1"
     },
     "devDependencies": {
         "@sveltejs/vite-plugin-svelte": "1.1.0",
         "@tsconfig/svelte": "3.0.0",
         "@types/howler": "2.2.7",
+        "@types/qrcode": "1.5.0",
         "svelte": "3.52.0",
         "svelte-check": "2.9.2",
         "svelte-preprocess": "4.10.7",
